@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAST Capacity Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a1628;
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e6ed;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #1a2942 0%, #152138 100%);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(32, 63, 66, 0.3);
+        }
+
+        .card h2 {
+            color: #4fc3f7;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #203F42;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #b0bec5;
+            font-size: 0.95em;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            background: #0f1b2e;
+            border: 1px solid #203F42;
+            border-radius: 6px;
+            font-size: 1em;
+            color: #e0e6ed;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            background: #152138;
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.1);
+        }
+
+        .input-group .range-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .input-group input[type="range"] {
+            flex: 1;
+        }
+
+        .input-group .range-value {
+            min-width: 60px;
+            text-align: center;
+            padding: 8px 12px;
+            background: #0f1b2e;
+            border: 1px solid #203F42;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #4fc3f7;
+        }
+
+        .result-item {
+            background: rgba(15, 27, 46, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(32, 63, 66, 0.4);
+        }
+
+        .result-item label {
+            font-weight: 500;
+            color: #b0bec5;
+        }
+
+        .result-item .value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #4fc3f7;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(32, 63, 66, 0.3);
+        }
+
+        .comparison-table th {
+            background: #203F42;
+            color: #4fc3f7;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        .comparison-table tbody tr {
+            background: rgba(15, 27, 46, 0.3);
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(79, 195, 247, 0.05);
+        }
+
+        .comparison-table td.value {
+            font-weight: 600;
+            color: #e0e6ed;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-left: 8px;
+        }
+
+        .info-badge.warning {
+            background: #ff9800;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        button {
+            background: linear-gradient(135deg, #4fc3f7 0%, #2196f3 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(79, 195, 247, 0.3);
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            box-shadow: 0 6px 16px rgba(79, 195, 247, 0.4);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #7a8a99;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #1a3a5c 0%, #203F42 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight .big-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 10px 0;
+            color: #4fc3f7;
+            text-shadow: 0 2px 8px rgba(79, 195, 247, 0.3);
+        }
+
+        .highlight .label {
+            font-size: 1.1em;
+            opacity: 0.9;
+            color: #b0bec5;
+        }
+
+        /* Tooltip styles */
+        .tooltip-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: #203F42;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 18px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: help;
+            margin-left: 6px;
+            position: relative;
+        }
+
+        .tooltip-icon:hover {
+            background: #18294A;
+        }
+
+        .tooltip-content {
+            display: none;
+            position: absolute;
+            left: 50%;
+            bottom: 120%;
+            transform: translateX(-50%);
+            background: #18294A;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            width: 280px;
+            font-size: 13px;
+            line-height: 1.5;
+            z-index: 1000;
+            text-align: left;
+            font-weight: normal;
+        }
+
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #18294A;
+        }
+
+        .tooltip-icon:hover .tooltip-content {
+            display: block;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VAST Storage Capacity Calculator</h1>
+            <p>Calculate storage capacity for VAST configurations</p>
+        </header>
+
+        <div class="calculator-grid">
+            <!-- Input Card -->
+            <div class="card">
+                <h2>Configuration Parameters</h2>
+
+                <div class="input-group">
+                    <label for="dboxModel">Primary DBox Model</label>
+                    <select id="dboxModel" onchange="updateAllowedCapacities()">
+                        <option value="mavericks" selected>Mavericks (DF-5616/DF-5630): 12 SCM + 44 QLC</option>
+                        <option value="alletra">HPE Alletra MP: 4 SCM + 20 QLC</option>
+                        <option value="ceres">Ceres: 8 SCM + 22 QLC</option>
+                    </select>
+                    <p class="help-text">Select the primary DBox model type</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="diskCapacity">Disk Capacity (QLC)</label>
+                    <select id="diskCapacity">
+                        <!-- Options populated dynamically based on selected model -->
+                    </select>
+                    <p class="help-text">Select the QLC disk capacity (options vary by model)</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="numDBoxes">Number of Primary DBoxes</label>
+                    <input type="number" id="numDBoxes" min="1" max="250" value="10">
+                    <p class="help-text">Enter the number of primary DBoxes (1-250)</p>
+                </div>
+
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="enableMixed" onchange="toggleMixedConfig()">
+                        Enable Mixed Configuration (Beta)
+                    </label>
+                    <p class="help-text">Mix different DBox models in the same cluster</p>
+                </div>
+
+                <div id="mixedConfig" style="display: none;">
+                    <div class="input-group">
+                        <label for="secondaryModel">Secondary DBox Model</label>
+                        <select id="secondaryModel" onchange="updateSecondaryAllowedCapacities()">
+                            <option value="mavericks">Mavericks (DF-5616/DF-5630)</option>
+                            <option value="alletra" selected>HPE Alletra MP</option>
+                            <option value="ceres">Ceres</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="secondaryDiskCapacity">Secondary Disk Capacity (QLC)</label>
+                        <select id="secondaryDiskCapacity">
+                            <!-- Options populated dynamically based on selected secondary model -->
+                        </select>
+                        <p class="help-text" id="diskSizeWarning" style="color: #ff9800; display: none;">⚠️ Secondary disk size must be equal or larger than primary</p>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="numSecondaryDBoxes">Number of Secondary DBoxes</label>
+                        <input type="number" id="numSecondaryDBoxes" min="0" max="100" value="5">
+                        <p class="help-text">Enter the number of secondary DBoxes (0-100)</p>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="configType">Configuration Type</label>
+                    <select id="configType">
+                        <option value="standard">Standard Layout</option>
+                        <option value="dbox-ha">DBox-HA</option>
+                    </select>
+                </div>
+
+                <div class="button-group" style="margin-top: 20px;">
+                    <button onclick="calculate()">Calculate</button>
+                    <button onclick="resetForm()" style="background: #757575;">Reset</button>
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card">
+                <h2>Capacity Results</h2>
+
+                <div class="highlight">
+                    <div class="label">Effective Capacity (with DRR 1.30x)</div>
+                    <div class="big-number" id="effectiveCapacity">0.00 TB</div>
+                </div>
+
+                <div class="result-item">
+                    <label>Total Raw Capacity</label>
+                    <span class="value" id="totalRawCapacity">0.00 TB</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Useable Capacity per DBox</label>
+                    <span class="value" id="useableCapacityPerDBox">0.00 TB</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Total Useable Capacity (TB)</label>
+                    <span class="value" id="useableCapacityTB">0.00 TB</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Effective Capacity (TB)</label>
+                    <span class="value" id="effectiveCapacityTB">0.00 TB</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Useable Capacity (TiB)</label>
+                    <span class="value" id="useableCapacityTiB">0.00 TiB</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Effective Capacity (TiB)</label>
+                    <span class="value" id="effectiveCapacityTiB">0.00 TiB</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Data Strips per Stripe</label>
+                    <span class="value" id="dataStrips">0</span>
+                </div>
+
+                <div class="result-item">
+                    <label>EC Overhead</label>
+                    <span class="value" id="ecOverhead">0.00%</span>
+                </div>
+
+                <div class="result-item">
+                    <label>File System Overhead</label>
+                    <span class="value" id="fileSystemOverhead">0.00%</span>
+                </div>
+            </div>
+
+            <!-- Performance Card -->
+            <div class="card">
+                <h2>Performance Metrics</h2>
+
+                <div class="highlight">
+                    <div class="label">Aggregate Read Bandwidth</div>
+                    <div class="big-number" id="totalReadBW">0 GB/s</div>
+                </div>
+
+                <div class="result-item">
+                    <label>Read Bandwidth per DBox</label>
+                    <span class="value" id="readBWPerDBox">0 GB/s</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Total Write Bandwidth</label>
+                    <span class="value" id="totalWriteBW">0 GB/s</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Write Bandwidth per DBox</label>
+                    <span class="value" id="writeBWPerDBox">0 GB/s</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Estimated IOPS (4K Random Read)</label>
+                    <span class="value" id="randomIOPS">0</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Estimated IOPS (4K Random Write)</label>
+                    <span class="value" id="randomWriteIOPS">0</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Sequential Read IOPS (1MB)</label>
+                    <span class="value" id="seqReadIOPS">0</span>
+                </div>
+
+                <div class="result-item">
+                    <label>Sequential Write IOPS (1MB)</label>
+                    <span class="value" id="seqWriteIOPS">0</span>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="card full-width">
+                <h2>Configuration Comparison</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Standard Layout</th>
+                            <th>DBox-HA</th>
+                            <th>Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonBody">
+                        <tr>
+                            <td>Effective Capacity</td>
+                            <td class="value" id="stdEffective">-</td>
+                            <td class="value" id="haEffective">-</td>
+                            <td class="value" id="diffEffective">-</td>
+                        </tr>
+                        <tr>
+                            <td>EC Overhead</td>
+                            <td class="value" id="stdOverhead">-</td>
+                            <td class="value" id="haOverhead">-</td>
+                            <td class="value" id="diffOverhead">-</td>
+                        </tr>
+                        <tr>
+                            <td>Storage Efficiency</td>
+                            <td class="value" id="stdEfficiency">-</td>
+                            <td class="value" id="haEfficiency">-</td>
+                            <td class="value" id="diffEfficiency">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const TB_TO_TIB = 0.909495; // Conversion factor
+
+        // DBox model configurations (based on latest EC Math 2.2 spreadsheet)
+        const DBOX_MODELS = {
+            'mavericks': {
+                drives: 56,
+                scm: 12,
+                qlc: 44,
+                name: 'Mavericks (DF-5616/DF-5630)',
+                description: '12 SCM (1.5TB) + 44 QLC SSDs',
+                allowedCapacities: [15.36, 30.72],
+                readBW: 40,  // GB/s per DBox
+                writeBW: 5,  // GB/s per DBox
+                randomReadIOPS: 2000000,  // 4K random read IOPS per DBox
+                randomWriteIOPS: 400000   // 4K random write IOPS per DBox
+            },
+            'alletra': {
+                drives: 24,
+                scm: 4,
+                qlc: 20,
+                name: 'HPE Alletra MP',
+                description: '4 SCM + 20 QLC SSDs',
+                allowedCapacities: [7.68, 15.36, 30.72],
+                readBW: 20,
+                writeBW: 2.5,
+                randomReadIOPS: 1000000,
+                randomWriteIOPS: 200000
+            },
+            'ceres': {
+                drives: 30,
+                scm: 8,
+                qlc: 22,
+                name: 'Ceres',
+                description: '8 SCM + 22 QLC SSDs',
+                allowedCapacities: [15.36, 61.44, 122.88],
+                readBW: 50,  // GB/s per DBox (from spreadsheet)
+                writeBW: 5.5, // GB/s per DBox (from spreadsheet)
+                randomReadIOPS: 800000,
+                randomWriteIOPS: 150000
+            }
+        };
+
+        // Update allowed disk capacities based on selected model
+        function updateAllowedCapacities() {
+            const model = document.getElementById('dboxModel').value;
+            const diskCapacitySelect = document.getElementById('diskCapacity');
+            const allowedCapacities = DBOX_MODELS[model].allowedCapacities;
+
+            // Store current value
+            const currentValue = parseFloat(diskCapacitySelect.value);
+
+            // Clear and rebuild options
+            diskCapacitySelect.innerHTML = '';
+            allowedCapacities.forEach(capacity => {
+                const option = document.createElement('option');
+                option.value = capacity;
+                option.textContent = capacity + ' TB';
+                diskCapacitySelect.appendChild(option);
+            });
+
+            // Restore value if still valid
+            if (allowedCapacities.includes(currentValue)) {
+                diskCapacitySelect.value = currentValue;
+            }
+
+            calculate();
+        }
+
+        // Update secondary allowed disk capacities
+        function updateSecondaryAllowedCapacities() {
+            const model = document.getElementById('secondaryModel').value;
+            const diskCapacitySelect = document.getElementById('secondaryDiskCapacity');
+            const allowedCapacities = DBOX_MODELS[model].allowedCapacities;
+
+            const currentValue = parseFloat(diskCapacitySelect.value);
+
+            diskCapacitySelect.innerHTML = '';
+            allowedCapacities.forEach(capacity => {
+                const option = document.createElement('option');
+                option.value = capacity;
+                option.textContent = capacity + ' TB';
+                diskCapacitySelect.appendChild(option);
+            });
+
+            if (allowedCapacities.includes(currentValue)) {
+                diskCapacitySelect.value = currentValue;
+            }
+
+            validateDiskSizes();
+            calculate();
+        }
+
+        // Validate disk sizes
+        function validateDiskSizes() {
+            const primaryDiskSize = parseFloat(document.getElementById('diskCapacity').value);
+            const secondaryDiskSize = parseFloat(document.getElementById('secondaryDiskCapacity').value);
+            const warning = document.getElementById('diskSizeWarning');
+
+            if (secondaryDiskSize < primaryDiskSize) {
+                warning.style.display = 'block';
+                return false;
+            } else {
+                warning.style.display = 'none';
+                return true;
+            }
+        }
+
+        // Toggle mixed configuration display
+        function toggleMixedConfig() {
+            const mixedConfig = document.getElementById('mixedConfig');
+            const enableMixed = document.getElementById('enableMixed').checked;
+            mixedConfig.style.display = enableMixed ? 'block' : 'none';
+            if (enableMixed) {
+                validateDiskSizes();
+            }
+            calculate();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize capacity dropdowns based on default models
+            updateAllowedCapacities();
+            updateSecondaryAllowedCapacities();
+
+            // Add validation listeners for disk capacity changes
+            document.getElementById('diskCapacity').addEventListener('change', function() {
+                if (document.getElementById('enableMixed').checked) {
+                    validateDiskSizes();
+                }
+            });
+
+            document.getElementById('secondaryDiskCapacity').addEventListener('change', function() {
+                if (document.getElementById('enableMixed').checked) {
+                    validateDiskSizes();
+                }
+            });
+
+            // Auto-calculate on input changes
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('change', calculate);
+                input.addEventListener('input', calculate); // Also update on input for number fields
+            });
+
+            // Initial calculation
+            calculate();
+        });
+
+        function calculate() {
+            // Get input values
+            const dboxModel = document.getElementById('dboxModel').value;
+            const diskCapacity = parseFloat(document.getElementById('diskCapacity').value) || 0;
+            const numDBoxes = parseInt(document.getElementById('numDBoxes').value) || 0;
+            const configType = document.getElementById('configType').value;
+
+            // Fixed overhead values from VAST spec
+            const initialOverprov = 8.0;
+            const dynamicOverprov = 1.0;
+            const driveOverhead = 0.23;
+
+            // Check if mixed configuration is enabled
+            const enableMixed = document.getElementById('enableMixed').checked;
+            let rawCapacityPerDBox, totalRawCapacity;
+
+            if (enableMixed) {
+                // Validate disk sizes
+                validateDiskSizes();
+
+                const secondaryModel = document.getElementById('secondaryModel').value;
+                const secondaryDiskCapacity = parseFloat(document.getElementById('secondaryDiskCapacity').value) || 0;
+                const numSecondaryDBoxes = parseInt(document.getElementById('numSecondaryDBoxes').value) || 0;
+
+                // Calculate for primary model
+                const primaryDrives = DBOX_MODELS[dboxModel].qlc; // Only QLC drives for capacity
+                const primaryRawCapacity = diskCapacity * primaryDrives * numDBoxes;
+
+                // Calculate for secondary model (with its own disk capacity)
+                const secondaryDrives = DBOX_MODELS[secondaryModel].qlc;
+                const secondaryRawCapacity = secondaryDiskCapacity * secondaryDrives * numSecondaryDBoxes;
+
+                // Total raw capacity is sum of both
+                totalRawCapacity = primaryRawCapacity + secondaryRawCapacity;
+
+                // Average raw capacity per DBox (for display)
+                const totalDBoxes = numDBoxes + numSecondaryDBoxes;
+                rawCapacityPerDBox = totalDBoxes > 0 ? totalRawCapacity / totalDBoxes : 0;
+            } else {
+                // Standard single model calculation
+                const drivesPerDBox = DBOX_MODELS[dboxModel].qlc; // Only QLC drives for capacity
+                rawCapacityPerDBox = diskCapacity * drivesPerDBox;
+                totalRawCapacity = rawCapacityPerDBox * numDBoxes;
+            }
+
+            // Apply overheads
+            const totalOverheadPercent = initialOverprov + dynamicOverprov + driveOverhead;
+            const overheadFactor = (100 - totalOverheadPercent) / 100;
+
+            // Calculate total DBoxes for EC overhead calculation (includes secondary if mixed)
+            let totalDBoxesForEC = numDBoxes;
+            let mixedConfigMetrics = null;
+
+            if (enableMixed) {
+                const secondaryModel = document.getElementById('secondaryModel').value;
+                const secondaryDiskCapacity = parseFloat(document.getElementById('secondaryDiskCapacity').value) || 0;
+                const numSecondaryDBoxes = parseInt(document.getElementById('numSecondaryDBoxes').value) || 0;
+                totalDBoxesForEC = numDBoxes + numSecondaryDBoxes;
+
+                // Calculate mixed config stripe width using VAST's proportional optimization
+                // Formula: Stripe Width = (BIG - 4) + SMALL / X
+                const primaryQLCCount = DBOX_MODELS[dboxModel].qlc;
+                const secondaryQLCCount = DBOX_MODELS[secondaryModel].qlc;
+                const totalPrimarySSDs = primaryQLCCount * numDBoxes;
+                const totalSecondarySSDs = secondaryQLCCount * numSecondaryDBoxes;
+
+                const primaryCapacityPerSSD = diskCapacity;
+                const secondaryCapacityPerSSD = secondaryDiskCapacity;
+
+                let bigSSDs, smallSSDs, capacityRatio, bigDBoxCount, smallDBoxCount, bigCapacity;
+
+                if (primaryCapacityPerSSD >= secondaryCapacityPerSSD) {
+                    bigSSDs = totalPrimarySSDs;
+                    smallSSDs = totalSecondarySSDs;
+                    capacityRatio = primaryCapacityPerSSD / secondaryCapacityPerSSD;
+                    bigDBoxCount = numDBoxes;
+                    smallDBoxCount = numSecondaryDBoxes;
+                    bigCapacity = primaryCapacityPerSSD;
+                } else {
+                    bigSSDs = totalSecondarySSDs;
+                    smallSSDs = totalPrimarySSDs;
+                    capacityRatio = secondaryCapacityPerSSD / primaryCapacityPerSSD;
+                    bigDBoxCount = numSecondaryDBoxes;
+                    smallDBoxCount = numDBoxes;
+                    bigCapacity = secondaryCapacityPerSSD;
+                }
+
+                // Calculate actual stripe width: (BIG - 4) + SMALL/X
+                const stripeWidth = (bigSSDs - 4) + (smallSSDs / capacityRatio);
+                const actualDataStrips = Math.round(stripeWidth - 4);
+
+                // Calculate EC strip distribution (percentage of stripes on large DBox)
+                const totalStripeCapacity = (bigSSDs - 4) + smallSSDs / capacityRatio;
+                const percentageOnLarge = ((bigSSDs - 4) / totalStripeCapacity) * 100;
+
+                mixedConfigMetrics = {
+                    stripeWidth: stripeWidth,
+                    actualDataStrips: actualDataStrips,
+                    capacityRatio: capacityRatio,
+                    percentageOnLarge: percentageOnLarge,
+                    bigDBoxCount: bigDBoxCount,
+                    smallDBoxCount: smallDBoxCount,
+                    bigCapacity: bigCapacity
+                };
+            }
+
+            // Calculate data strips per stripe based on configuration type and number of DBoxes
+            let dataStrips;
+            let parityStrips = 4; // VAST uses 4 parity strips
+
+            if (enableMixed && mixedConfigMetrics) {
+                // Use calculated stripe width for mixed config
+                dataStrips = mixedConfigMetrics.actualDataStrips;
+            } else if (configType === 'dbox-ha') {
+                // DBox-HA: data strips = (DBoxes - 4) * 2
+                dataStrips = (totalDBoxesForEC - 4) * 2;
+            } else {
+                // Standard Layout: uses fixed data strips based on DBox count
+                if (totalDBoxesForEC === 1) {
+                    dataStrips = 16;
+                } else if (totalDBoxesForEC === 2) {
+                    dataStrips = 36;
+                } else if (totalDBoxesForEC === 3) {
+                    dataStrips = 58;
+                } else if (totalDBoxesForEC === 4) {
+                    dataStrips = 80;
+                } else if (totalDBoxesForEC === 5) {
+                    dataStrips = 102;
+                } else if (totalDBoxesForEC === 6) {
+                    dataStrips = 124;
+                } else {
+                    dataStrips = 146; // Maximum for 7+ DBoxes
+                }
+            }
+
+            // Calculate EC overhead: (parity strips / data strips) * 100
+            const ecOverhead = (parityStrips / dataStrips) * 100;
+
+            // Calculate File System Overhead (from spreadsheet)
+            // This varies based on data strips count
+            let additionalOverhead;
+            if (dataStrips <= 16) {
+                additionalOverhead = 7.3;
+            } else if (dataStrips <= 36) {
+                additionalOverhead = 8.22;
+            } else if (dataStrips <= 58) {
+                additionalOverhead = 8.54;
+            } else if (dataStrips <= 80) {
+                additionalOverhead = 8.7;
+            } else if (dataStrips <= 102) {
+                additionalOverhead = 8.79;
+            } else if (dataStrips <= 124) {
+                additionalOverhead = 8.84;
+            } else {
+                additionalOverhead = 8.88;
+            }
+
+            const fileSystemOverhead = ecOverhead + additionalOverhead;
+
+            // Calculate useable capacity (after file system overhead)
+            const fileSystemFactor = (100 - fileSystemOverhead) / 100;
+            const useableCapacityTB = totalRawCapacity * fileSystemFactor;
+            const useableCapacityTiB = useableCapacityTB * TB_TO_TIB;
+
+            // Calculate effective capacity with DRR (Data Reduction Ratio = 1.30)
+            const DRR = 1.30;
+            const effectiveCapacityTB = useableCapacityTB * DRR;
+            const effectiveCapacityTiB = effectiveCapacityTB * TB_TO_TIB;
+
+            // Calculate efficiency
+            const efficiency = (useableCapacityTB / totalRawCapacity) * 100;
+
+            // Calculate performance metrics
+            let totalReadBW, totalWriteBW, totalRandomReadIOPS, totalRandomWriteIOPS;
+
+            if (enableMixed) {
+                const secondaryModel = document.getElementById('secondaryModel').value;
+                const numSecondaryDBoxes = parseInt(document.getElementById('numSecondaryDBoxes').value) || 0;
+
+                // Primary model performance
+                const primaryReadBW = DBOX_MODELS[dboxModel].readBW * numDBoxes;
+                const primaryWriteBW = DBOX_MODELS[dboxModel].writeBW * numDBoxes;
+                const primaryRandomReadIOPS = DBOX_MODELS[dboxModel].randomReadIOPS * numDBoxes;
+                const primaryRandomWriteIOPS = DBOX_MODELS[dboxModel].randomWriteIOPS * numDBoxes;
+
+                // Secondary model performance
+                const secondaryReadBW = DBOX_MODELS[secondaryModel].readBW * numSecondaryDBoxes;
+                const secondaryWriteBW = DBOX_MODELS[secondaryModel].writeBW * numSecondaryDBoxes;
+                const secondaryRandomReadIOPS = DBOX_MODELS[secondaryModel].randomReadIOPS * numSecondaryDBoxes;
+                const secondaryRandomWriteIOPS = DBOX_MODELS[secondaryModel].randomWriteIOPS * numSecondaryDBoxes;
+
+                // Total performance is sum of both
+                totalReadBW = primaryReadBW + secondaryReadBW;
+                totalWriteBW = primaryWriteBW + secondaryWriteBW;
+                totalRandomReadIOPS = primaryRandomReadIOPS + secondaryRandomReadIOPS;
+                totalRandomWriteIOPS = primaryRandomWriteIOPS + secondaryRandomWriteIOPS;
+            } else {
+                // Single model performance
+                totalReadBW = DBOX_MODELS[dboxModel].readBW * numDBoxes;
+                totalWriteBW = DBOX_MODELS[dboxModel].writeBW * numDBoxes;
+                totalRandomReadIOPS = DBOX_MODELS[dboxModel].randomReadIOPS * numDBoxes;
+                totalRandomWriteIOPS = DBOX_MODELS[dboxModel].randomWriteIOPS * numDBoxes;
+            }
+
+            // Calculate sequential IOPS (1MB blocks)
+            // 1 MB = 1024 KB, Bandwidth in GB/s = 1024 MB/s
+            const seqReadIOPS = Math.floor(totalReadBW * 1024); // 1MB blocks per second
+            const seqWriteIOPS = Math.floor(totalWriteBW * 1024);
+
+            const readBWPerDBox = numDBoxes > 0 ? totalReadBW / numDBoxes : 0;
+            const writeBWPerDBox = numDBoxes > 0 ? totalWriteBW / numDBoxes : 0;
+
+            // Calculate useable capacity per DBox
+            const useableCapacityPerDBox = totalDBoxesForEC > 0 ? useableCapacityTB / totalDBoxesForEC : 0;
+
+            // Calculate performance bottleneck for mixed configs
+            let performanceBottleneck = null;
+            if (enableMixed && mixedConfigMetrics) {
+                // Read I/O follows data distribution
+                // percentage of I/O = percentage of EC strips on that DBox
+                const largeBoxBWShare = (mixedConfigMetrics.percentageOnLarge / 100);
+                const smallBoxBWShare = 1 - largeBoxBWShare;
+
+                // Get single DBox performance for each type
+                const largeModelBW = enableMixed ?
+                    (mixedConfigMetrics.bigCapacity === diskCapacity ?
+                        DBOX_MODELS[dboxModel].readBW :
+                        DBOX_MODELS[document.getElementById('secondaryModel').value].readBW) : 0;
+                const smallModelBW = enableMixed ?
+                    (mixedConfigMetrics.bigCapacity === diskCapacity ?
+                        DBOX_MODELS[document.getElementById('secondaryModel').value].readBW :
+                        DBOX_MODELS[dboxModel].readBW) : 0;
+
+                // Calculate when bottleneck occurs
+                // Small box will be at X% load when large box saturates
+                const smallBoxLoadAtLargeSaturation = largeBoxBWShare > 0 ? (smallBoxBWShare / largeBoxBWShare) * 100 : 100;
+
+                // Performance scaling factor based on bottleneck
+                // If distribution is even (50/50), performance scales linearly with count
+                // If unbalanced, large box becomes bottleneck
+                const performanceScalingFactor = largeBoxBWShare > 0 ? (largeModelBW + smallModelBW * smallBoxBWShare / largeBoxBWShare) / largeModelBW : 1.0;
+
+                performanceBottleneck = {
+                    percentageOnLarge: mixedConfigMetrics.percentageOnLarge,
+                    largeBoxWillSaturateAt: Math.round(smallBoxLoadAtLargeSaturation * 100),
+                    performanceScalingFactor: performanceScalingFactor
+                };
+            }
+
+            // DBox-HA validation (only warn, don't block calculation)
+            if (configType === 'dbox-ha' && totalDBoxesForEC < 7) {
+                // DBox-HA minimum is actually 7 DBoxes based on spreadsheet data
+                console.warn('DBox-HA requires a minimum of 7 DBoxes. Current count: ' + totalDBoxesForEC);
+            }
+
+            // Update capacity display
+            document.getElementById('totalRawCapacity').textContent = formatNumber(totalRawCapacity, 2) + ' TB';
+            document.getElementById('useableCapacityPerDBox').textContent = formatNumber(useableCapacityPerDBox, 2) + ' TB';
+            document.getElementById('useableCapacityTB').textContent = formatNumber(useableCapacityTB, 2) + ' TB';
+            document.getElementById('effectiveCapacityTB').textContent = formatNumber(effectiveCapacityTB, 2) + ' TB';
+            document.getElementById('useableCapacityTiB').textContent = formatNumber(useableCapacityTiB, 2) + ' TiB';
+            document.getElementById('effectiveCapacityTiB').textContent = formatNumber(effectiveCapacityTiB, 2) + ' TiB';
+            document.getElementById('effectiveCapacity').textContent = formatNumber(effectiveCapacityTB, 2) + ' TB';
+            document.getElementById('dataStrips').textContent = dataStrips;
+            document.getElementById('ecOverhead').textContent = formatNumber(ecOverhead, 2) + '%';
+            document.getElementById('fileSystemOverhead').textContent = formatNumber(fileSystemOverhead, 2) + '%';
+
+            // Update performance display
+            document.getElementById('totalReadBW').textContent = formatNumber(totalReadBW, 1) + ' GB/s';
+            document.getElementById('readBWPerDBox').textContent = formatNumber(readBWPerDBox, 1) + ' GB/s';
+            document.getElementById('totalWriteBW').textContent = formatNumber(totalWriteBW, 1) + ' GB/s';
+            document.getElementById('writeBWPerDBox').textContent = formatNumber(writeBWPerDBox, 1) + ' GB/s';
+            document.getElementById('randomIOPS').textContent = formatNumber(totalRandomReadIOPS, 0);
+            document.getElementById('randomWriteIOPS').textContent = formatNumber(totalRandomWriteIOPS, 0);
+            document.getElementById('seqReadIOPS').textContent = formatNumber(seqReadIOPS, 0);
+            document.getElementById('seqWriteIOPS').textContent = formatNumber(seqWriteIOPS, 0);
+
+            // Update comparison table
+            updateComparison(dboxModel, diskCapacity, numDBoxes);
+        }
+
+        function updateComparison(dboxModel, diskCapacity, numDBoxes) {
+            // Calculate for both configurations
+            const results = {
+                standard: calculateForConfig('standard', dboxModel, diskCapacity, numDBoxes),
+                ha: calculateForConfig('dbox-ha', dboxModel, diskCapacity, numDBoxes)
+            };
+
+            // Update table
+            document.getElementById('stdEffective').textContent = formatNumber(results.standard.effective, 2) + ' TB';
+            document.getElementById('haEffective').textContent = formatNumber(results.ha.effective, 2) + ' TB';
+            document.getElementById('diffEffective').textContent = formatNumber(results.ha.effective - results.standard.effective, 2) + ' TB';
+
+            document.getElementById('stdOverhead').textContent = formatNumber(results.standard.ecOverhead, 2) + '%';
+            document.getElementById('haOverhead').textContent = formatNumber(results.ha.ecOverhead, 2) + '%';
+            document.getElementById('diffOverhead').textContent = formatNumber(results.ha.ecOverhead - results.standard.ecOverhead, 2) + '%';
+
+            document.getElementById('stdEfficiency').textContent = formatNumber(results.standard.efficiency, 2) + '%';
+            document.getElementById('haEfficiency').textContent = formatNumber(results.ha.efficiency, 2) + '%';
+            document.getElementById('diffEfficiency').textContent = formatNumber(results.ha.efficiency - results.standard.efficiency, 2) + '%';
+        }
+
+        function calculateForConfig(configType, dboxModel, diskCapacity, numDBoxes) {
+            // Fixed overhead values from VAST spec
+            const initialOverprov = 8.0;
+            const dynamicOverprov = 1.0;
+            const driveOverhead = 0.23;
+
+            const drivesPerDBox = DBOX_MODELS[dboxModel].qlc; // Only QLC drives
+            const rawCapacityPerDBox = diskCapacity * drivesPerDBox;
+            const totalRawCapacity = rawCapacityPerDBox * numDBoxes;
+            const totalOverheadPercent = initialOverprov + dynamicOverprov + driveOverhead;
+            const overheadFactor = (100 - totalOverheadPercent) / 100;
+
+            // Calculate EC overhead based on data strips (same formula as main calculate)
+            let dataStrips;
+            let parityStrips = 4;
+
+            if (configType === 'dbox-ha') {
+                // DBox-HA: data strips = (DBoxes - 4) * 2
+                dataStrips = (numDBoxes - 4) * 2;
+            } else {
+                // Standard Layout
+                if (numDBoxes === 1) {
+                    dataStrips = 16;
+                } else if (numDBoxes === 2) {
+                    dataStrips = 36;
+                } else if (numDBoxes === 3) {
+                    dataStrips = 58;
+                } else if (numDBoxes === 4) {
+                    dataStrips = 80;
+                } else if (numDBoxes === 5) {
+                    dataStrips = 102;
+                } else if (numDBoxes === 6) {
+                    dataStrips = 124;
+                } else {
+                    dataStrips = 146;
+                }
+            }
+
+            const ecOverhead = (parityStrips / dataStrips) * 100;
+
+            // Calculate File System Overhead
+            let additionalOverhead;
+            if (dataStrips <= 16) {
+                additionalOverhead = 7.3;
+            } else if (dataStrips <= 36) {
+                additionalOverhead = 8.22;
+            } else if (dataStrips <= 58) {
+                additionalOverhead = 8.54;
+            } else if (dataStrips <= 80) {
+                additionalOverhead = 8.7;
+            } else if (dataStrips <= 102) {
+                additionalOverhead = 8.79;
+            } else if (dataStrips <= 124) {
+                additionalOverhead = 8.84;
+            } else {
+                additionalOverhead = 8.88;
+            }
+
+            const fileSystemOverhead = ecOverhead + additionalOverhead;
+
+            const fileSystemFactor = (100 - fileSystemOverhead) / 100;
+            const useableCapacityTB = totalRawCapacity * fileSystemFactor;
+
+            const DRR = 1.30;
+            const effectiveCapacityTB = useableCapacityTB * DRR;
+            const efficiency = (useableCapacityTB / totalRawCapacity) * 100;
+
+            return {
+                effective: effectiveCapacityTB,
+                ecOverhead: ecOverhead,
+                efficiency: efficiency
+            };
+        }
+
+        function formatNumber(num, decimals = 2) {
+            return num.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function resetForm() {
+            document.getElementById('dboxModel').value = 'mavericks';
+            document.getElementById('diskCapacity').value = 30.72;
+            document.getElementById('numDBoxes').value = 10;
+            document.getElementById('configType').value = 'standard';
+            document.getElementById('enableMixed').checked = false;
+            document.getElementById('mixedConfig').style.display = 'none';
+            document.getElementById('numSecondaryDBoxes').value = 5;
+            document.getElementById('secondaryDiskCapacity').value = 30.72;
+            calculate();
+        }
+    </script>
+</body>
+</html>

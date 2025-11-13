@@ -1,0 +1,49 @@
+{
+  "name": "vast-calculator",
+  "version": "1.0.0",
+  "description": "VAST storage capacity calculator with production-grade CI/CD infrastructure",
+  "main": "vast-calculator/index.html",
+  "homepage": "https://ssotoa70.github.io/cerdinhos/vast-calculator/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ssotoa70/cerdinhos.git"
+  },
+  "scripts": {
+    "lint": "eslint . --ext .js,.html --fix",
+    "lint:check": "eslint . --ext .js,.html",
+    "format": "prettier --write '**/*.{js,json,md,html,css}'",
+    "format:check": "prettier --check '**/*.{js,json,md,html,css}'",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "build": "node scripts/build.js",
+    "build:check": "npm run lint:check && npm run test && npm run test:e2e",
+    "serve": "python3 -m http.server 8000",
+    "precommit": "lint-staged"
+  },
+  "keywords": [
+    "vast",
+    "storage",
+    "calculator",
+    "dbox"
+  ],
+  "author": "Sergio Soto",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/jest": "^29.5.8",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^15.1.0",
+    "prettier": "^3.1.0"
+  }
+}
