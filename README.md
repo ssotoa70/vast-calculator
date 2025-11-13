@@ -281,10 +281,21 @@ function formatNumber(num, decimals = 2) {
 ## 🚀 Deployment
 
 ### GitHub Pages (Automatic)
-Deployed automatically on every push to main:
-```
-https://ssotoa70.github.io/vast-calculator/
-```
+
+The repository includes a GitHub Actions workflow that automatically deploys to GitHub Pages on every push to main.
+
+**URL:** https://ssotoa70.github.io/vast-calculator/
+
+**Setup Instructions:**
+1. Go to: https://github.com/ssotoa70/vast-calculator/settings/pages
+2. Under "Source", select:
+   - **Source**: Deploy from a branch
+   - **Branch**: main
+   - **Directory**: / (root)
+3. Click "Save"
+4. GitHub Actions will automatically run and deploy the site
+
+**Status:** Check deployment status in the [Actions tab](https://github.com/ssotoa70/vast-calculator/actions)
 
 ### Self-Hosted
 Since this is a static site, you can host it anywhere:
